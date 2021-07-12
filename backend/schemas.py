@@ -3,20 +3,35 @@ from typing import List
 
 
 class CorpusBase(BaseModel):
-    id: int = Field(description="Corpus Id")
-
-
-class Corpus(CorpusBase):
     title: str = Field(description="Corpus title")
 
 
-class Corpora(BaseModel):
-    data: List[Corpus] = []
+class CorpusItem(CorpusBase):
+    id: int = Field(description="Corpus Id")
+
+    class Config:
+        orm_mode = True
+
+
+class CorpusCreate(BaseModel):
+    title: str = Field(description="Corpus title")
 
     class Config:
         schema_extra = {
             "example": {
-                "data": [
+                "title": "Brown Corpus"
+            }
+        }
+        orm_mode = True
+
+
+class Corpora(BaseModel):
+    corpora: List[CorpusItem]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "corpora": [
                     {
                         "id": 1,
                         "title": "Brown Corpus",
