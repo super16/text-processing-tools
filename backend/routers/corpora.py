@@ -18,7 +18,7 @@ def get_db(request: Request):
 
 
 @router.get(
-    "/",
+    "",
     summary="All corpora",
     response_model=Corpora,
     description="List of all corpora"
@@ -29,7 +29,7 @@ async def all_corpora(db: Session = Depends(get_db)):
 
 
 @router.post(
-    "/",
+    "",
     summary="Add corpus",
     response_model=CorpusCreate,
     description="Send title of new corpus"

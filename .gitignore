@@ -4,4 +4,19 @@ __pycache__/
 *$py.class
 
 # Database
-*.db
+backend/*.db
+
+# Frontend
+frontend/.DS_Store
+frontend/node_modules/
+frontend/dist/
+
+# local env files
+frontend/.env.local
+frontend/.env.*.local
+
+# Log files
+frontend/npm-debug.log*
+
+# Editor directories and files
+frontend/.vscode
