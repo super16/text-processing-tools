@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from exceptions import AlreadyExistsException, DoesNotExistException
 from routers import corpora
 from models import Base
 from database import SessionLocal, engine
@@ -38,9 +40,9 @@ async def db_session_middleware(request: Request, call_next):
 
 
 # Dependency
+
 def get_db(request: Request):
     return request.state.db
-
 
 # v1 API settings
 
@@ -60,7 +62,6 @@ v1 = FastAPI(
 
 api.mount("/api/v1", v1)
 
-
 @v1.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -68,3 +69,23 @@ async def root():
 # Routers
 
 v1.include_router(corpora.router)
+
+# Exceptions
+
+@v1.exception_handler(AlreadyExistsException)
+async def already_exists_exception_handler(
+    request: Request,
+    exc: AlreadyExistsException):
+    return JSONResponse(
+        status_code=400,
+        content={"error": f"{exc.title} already exists"},
+    )
+
+@v1.exception_handler(DoesNotExistException)
+async def does_not_exists_exception_handler(
+    request: Request, 
+    exc: DoesNotExistException):
+    return JSONResponse(
+        status_code=404,
+        content={"error": "Requested object does not exist"},
+    )

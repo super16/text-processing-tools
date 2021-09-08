@@ -4,7 +4,7 @@
         <ListItemContent>
           <span class="font-weight-bold">List of corpora</span>
         </ListItemContent>
-      <ListItemAction :icon="plusIcon" :action="toggleModalDialog" tooltip="Add new corpus"/>
+      <ListItemAction :icon="plusIcon" :action="toggleAddModalDialog" tooltip="Add new corpus"/>
       <ListItemAction :icon="editIcon" :action="toggleEditable" tooltip="Toggle edit"/>
     </v-list-item>
     <v-list v-if="corpora.length > 0" nav>
@@ -15,7 +15,8 @@
           </ListItemContent>
           <ListItemAction
             v-if="editable" small :icon="editIcon"
-            :action="toggleEditable" disabled tooltip="Edit corpus"/>
+            :action="editCorpus" tooltip="Edit corpus"
+            @click.native="updateCorpusToEdit(corpus)" />
           <ListItemAction v-if="editable" small :icon="closeIcon" disabled :action="toggleEditable"
             color="red" tooltip="Delete corpus"/>
         </template>
@@ -29,13 +30,17 @@
       </v-list-item>
     </v-list>
     <v-divider />
-    <Modal :dialog="modalDialog" :width="500">
-      <AddCorpus :toggle="toggleModalDialog"/>
+    <Modal :dialog="modalAddDialog" :width="500">
+      <AddCorpus :toggle="toggleAddModalDialog"/>
+    </Modal>
+    <Modal :dialog="editModalDialog" :width="500">
+      <EditCorpus :toggle="editCorpus" :corpus="corpusToEdit" />
     </Modal>
   </v-navigation-drawer>
 </template>
 
 <script>
+import EditCorpus from '@/components/modals/EditCorpus.vue';
 import ListItemAction from '@/components/ui/ListItemAction.vue';
 import ListItemContent from '@/components/ui/ListItemContent.vue';
 import Modal from '@/components/ui/Modal.vue';
@@ -49,12 +54,15 @@ export default {
     return {
       plusIcon: mdiPlus,
       editIcon: mdiPencil,
+      corpusToEdit: {},
       closeIcon: mdiClose,
       editable: false,
-      modalDialog: false,
+      editModalDialog: false,
+      modalAddDialog: false,
     };
   },
   components: {
+    EditCorpus,
     ListItemAction,
     ListItemContent,
     Modal,
@@ -65,11 +73,17 @@ export default {
   }),
   methods: {
     ...mapActions('corpora', ['loadCorpora']),
+    updateCorpusToEdit(corpus) {
+      this.corpusToEdit = corpus;
+    },
+    editCorpus() {
+      this.editModalDialog = !this.editModalDialog;
+    },
     toggleEditable() {
       this.editable = !this.editable;
     },
-    toggleModalDialog() {
-      this.modalDialog = !this.modalDialog;
+    toggleAddModalDialog() {
+      this.modalAddDialog = !this.modalAddDialog;
     },
   },
   created() {

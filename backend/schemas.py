@@ -5,6 +5,14 @@ from typing import List
 class CorpusBase(BaseModel):
     title: str = Field(description="Corpus title")
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "title": "New Corpus Title"
+            }
+        }
+        orm_mode = True
+
 
 class CorpusItem(CorpusBase):
     id: int = Field(description="Corpus Id")
