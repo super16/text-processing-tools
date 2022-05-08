@@ -1,22 +1,31 @@
+# Assets
+app/static/*
+app/templates/*
+!app/templates/.gitkeep
+!app/templates/static
+app/templates/static/*
+!app/templates/static/.gitkeep
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
 # Database
-backend/*.db
+*.db
+
+# Environment
+env/
+/.env
 
 # Frontend
-frontend/.DS_Store
-frontend/node_modules/
-frontend/dist/
-
-# local env files
-frontend/.env.local
-frontend/.env.*.local
+app/frontend/.DS_Store
+app/frontend/.vscode
+app/frontend/node_modules/
+app/frontend/dist/
 
 # Log files
-frontend/npm-debug.log*
+app/frontend/npm-debug.log*
 
-# Editor directories and files
-frontend/.vscode
+# MyPy
+.mypy_cache

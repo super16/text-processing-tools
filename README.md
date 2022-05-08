@@ -1,24 +1,25 @@
-# Text Processing Tools
+# text-processing-tools
 
-## Backend
+## Development Mode
+
+### Prepare environment
+
+```bash
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+## Prepare frontend application
+
+```bash
+cd app/frontend
+npm install
+cd ../..
+```
 
 ### Run
 
 ```bash
-uvicorn main:api --reload
+python app/main.py
 ```
-
-## Frontend
-
-### Compile and Build
-
-```bash
-npm run build
-```
-
-### Compile and Run
-
-```bash
-npm run serve
-```
-
