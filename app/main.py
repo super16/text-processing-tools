@@ -15,8 +15,9 @@ from database import SessionLocal, engine
 
 # Constants
 
-RELOAD_EXCLUDES = [
+RELOAD_EXCLUDES: list[str] = [
     "app/__pycache__",
+    "app/routers/__pycache__",
     "app/templates",
     ".git",
     "env"
@@ -49,6 +50,7 @@ app.mount(
     name="static",
 )
 
+
 @app.on_event("startup")
 async def startup_event():
     logger: Logger = getLogger("uvicorn.error")
@@ -59,6 +61,7 @@ async def startup_event():
         universal_newlines=True,
     ) as proc:
         logger.info(proc.stdout.read())
+
 
 @app.get("/", response_class=HTMLResponse, tags=["Application"])
 async def index_page(request: Request):
@@ -81,6 +84,7 @@ api: FastAPI = FastAPI(
     ],
 )
 
+
 # Middleware
 
 @api.middleware("http")
@@ -93,30 +97,35 @@ async def db_session_middleware(request: Request, call_next):
         request.state.db.close()
     return response
 
+
 # Dependency
 
 def get_db(request: Request):
     return request.state.db
 
-app.mount("/api", api)
 
+app.mount("/api", api)
 api.include_router(corpora.router)
+
 
 # Exceptions
 
 @api.exception_handler(AlreadyExistsException)
 async def already_exists_exception_handler(
     request: Request,
-    exc: AlreadyExistsException):
+    exc: AlreadyExistsException
+):
     return JSONResponse(
         status_code=400,
         content={"error": f"{exc.title} already exists"},
     )
 
+
 @api.exception_handler(DoesNotExistException)
 async def does_not_exists_exception_handler(
-    request: Request, 
-    exc: DoesNotExistException):
+    request: Request,
+    exc: DoesNotExistException
+):
     return JSONResponse(
         status_code=404,
         content={"error": "Requested object does not exist"},

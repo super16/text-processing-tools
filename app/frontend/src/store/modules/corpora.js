@@ -23,7 +23,7 @@ export default {
     async loadCorpora(context) {
       await axios.get('corpora').then(
         (response) => (
-          context.commit('updateCorporaData', response.data.corpora)
+          context.commit('updateCorporaData', response.data.data)
         ),
       );
     },

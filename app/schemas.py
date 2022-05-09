@@ -34,12 +34,12 @@ class CorpusCreate(BaseModel):
 
 
 class Corpora(BaseModel):
-    corpora: List[CorpusItem]
+    data: List[CorpusItem]
 
     class Config:
         schema_extra = {
             "example": {
-                "corpora": [
+                "data": [
                     {
                         "id": 1,
                         "title": "Brown Corpus",

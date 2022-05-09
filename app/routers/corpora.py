@@ -3,20 +3,12 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from exceptions import AlreadyExistsException, DoesNotExistException
-from crud import (
-    create_corpus,
-    get_corpora,
-    get_corpus_by_id,
-    get_corpus_by_title,
-    get_corpus_by_title_and_id,
-    update_corpus
-)   
+from crud import BaseCRUD
+from models import Corpus
 from schemas import Corpora, CorpusCreate, CorpusBase
 
-router = APIRouter(
-    prefix="/corpora",
-    tags=["corpora"]
-)
+
+router = APIRouter(prefix="/corpora", tags=["corpora"])
 
 
 # Dependency
@@ -25,18 +17,21 @@ def get_db(request: Request):
     return request.state.db
 
 
-@router.get("", summary="All corpora",
+@router.get(
+    "",
+    description="List of all corpora",
     response_model=Corpora,
-    description="List of all corpora"
+    summary="All corpora",
 )
 async def all_corpora(db: Session = Depends(get_db)):
-    corpora_list = get_corpora(db)
-    return {"corpora": corpora_list}
+    corpora_crud = BaseCRUD(db, Corpus)
+    return {"data": corpora_crud.get_items()}
 
 
-@router.post("", summary="Add corpus",
-    response_model=CorpusCreate,
+@router.post(
+    "",
     description="Send title of new corpus",
+    response_model=CorpusCreate,
     responses={
         200: {
             "description": "Corpus has been added"
@@ -50,16 +45,20 @@ async def all_corpora(db: Session = Depends(get_db)):
             },
         },
     },
+    summary="Add corpus",
 )
 async def add_corpus(corpus: CorpusCreate, db: Session = Depends(get_db)):
-    new_corpus = get_corpus_by_title(db, corpus.title)
+    corpora_crud = BaseCRUD(db, Corpus)
+    new_corpus = corpora_crud.get_item_by_title(corpus.title)
     if new_corpus:
         raise AlreadyExistsException(title=corpus.title)
-    return create_corpus(db=db, corpus=corpus)
+    return corpora_crud.create_item(corpus)
 
-@router.put("/{corpusId}", summary="Edit corpus",
-    response_model=CorpusBase,
+
+@router.put(
+    "/{corpus_id}",
     description="Change corpus title",
+    response_model=CorpusBase,
     responses={
         200: {
             "description": "Corpus with title has been changed"
@@ -81,29 +80,29 @@ async def add_corpus(corpus: CorpusCreate, db: Session = Depends(get_db)):
             },
         },
     },
+    summary="Edit corpus",
 )
 async def edit_corpus(
-    corpusId: int, corpus: CorpusBase, db: Session = Depends(get_db)
-    ):
-    corpus_id = corpusId
-    get_corpus = get_corpus_by_id(db, corpus_id)
+    corpus_id: int,
+    corpus: CorpusBase,
+    db: Session = Depends(get_db)
+):
+    corpora_crud = BaseCRUD(db, Corpus)
+    get_corpus = corpora_crud.get_item_by_id(corpus_id)
 
     # Check if it's the same corpus
-    same_corpus = get_corpus_by_title_and_id(db, corpus.title, corpus_id)
+    same_corpus = corpora_crud.get_item_by_id_and_title(
+        corpus_id, corpus.title
+    )
     if same_corpus:
-        return update_corpus(db=db, corpus=same_corpus, new_title=corpus.title)
+        return corpora_crud.update_item_title(same_corpus, corpus.title)
 
     # Check if corpus with this title exists
-    corpus_title_exists = get_corpus_by_title(db, corpus.title)
+    corpus_title_exists = corpora_crud.get_item_by_title(corpus.title)
     if corpus_title_exists:
-        raise AlreadyExistsException(title=corpus.title)    
+        raise AlreadyExistsException(title=corpus.title)
 
     # Check for non-existent id
     if not get_corpus:
         raise DoesNotExistException(id=corpus_id)
-    return update_corpus(db=db, corpus=get_corpus, new_title=corpus.title)
-
-        
-    
-        
-
+    return corpora_crud.update_item_title(get_corpus, corpus.title)
