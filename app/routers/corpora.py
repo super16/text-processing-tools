@@ -25,7 +25,7 @@ def get_db(request: Request):
 )
 async def all_corpora(db: Session = Depends(get_db)):
     corpora_crud = BaseCRUD(db, Corpus)
-    return {"data": corpora_crud.get_items()}
+    return {"data": corpora_crud.read_items()}
 
 
 @router.post(
@@ -49,7 +49,7 @@ async def all_corpora(db: Session = Depends(get_db)):
 )
 async def add_corpus(corpus: CorpusCreate, db: Session = Depends(get_db)):
     corpora_crud = BaseCRUD(db, Corpus)
-    new_corpus = corpora_crud.get_item_by_title(corpus.title)
+    new_corpus = corpora_crud.read_item_by_attr('title', corpus.title)
     if new_corpus:
         raise AlreadyExistsException(title=corpus.title)
     return corpora_crud.create_item(corpus)
@@ -87,22 +87,28 @@ async def edit_corpus(
     corpus: CorpusBase,
     db: Session = Depends(get_db)
 ):
-    corpora_crud = BaseCRUD(db, Corpus)
-    get_corpus = corpora_crud.get_item_by_id(corpus_id)
+    corpora_crud: BaseCRUD = BaseCRUD(db, Corpus)
+    get_corpus = corpora_crud.read_item_by_attr('id', corpus_id)
 
     # Check if it's the same corpus
     same_corpus = corpora_crud.get_item_by_id_and_title(
         corpus_id, corpus.title
     )
     if same_corpus:
-        return corpora_crud.update_item_title(same_corpus, corpus.title)
+        return corpora_crud.update_item_by_attr(
+            same_corpus, 'title', corpus.title
+        )
 
     # Check if corpus with this title exists
-    corpus_title_exists = corpora_crud.get_item_by_title(corpus.title)
+    corpus_title_exists = corpora_crud.read_item_by_attr(
+        'title', corpus.title
+    )
     if corpus_title_exists:
         raise AlreadyExistsException(title=corpus.title)
 
     # Check for non-existent id
     if not get_corpus:
         raise DoesNotExistException(id=corpus_id)
-    return corpora_crud.update_item_title(get_corpus, corpus.title)
+    return corpora_crud.update_item_by_attr(
+            get_corpus, 'title', corpus.title
+        )
