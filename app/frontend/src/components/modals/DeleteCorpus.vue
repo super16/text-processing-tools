@@ -1,19 +1,15 @@
 <template>
   <v-card>
     <v-card-title class="white--text secondary">
-      Edit corpus
+      Delete corpus
     </v-card-title>
+    <v-card-text class="body-1 mt-4">
+      Are you sure to delete
+      <span class="font-weight-bold">{{ corpus.title }}</span>?
+    </v-card-text>
     <v-container>
-      <v-text-field
-        v-model="corpus.title"
-        clearable
-        hide-details
-        label="Title"
-        outlined
-        placeholder="Enter corpus title"
-      />
     <v-card-actions>
-      <v-spacer />
+      <v-spacer></v-spacer>
       <v-btn
         color="red darken-1"
         oultined
@@ -25,9 +21,9 @@
       <v-btn
         color="green darken-1"
         text
-        @click="renameCorpus(corpus)"
+        @click="deleteItem"
       >
-        Edit
+        Delete
       </v-btn>
       </v-card-actions>
     </v-container>
@@ -38,13 +34,14 @@
 import { mapActions } from 'vuex';
 
 export default {
+  name: 'DeleteCorpus',
   props: {
     corpus: Object,
   },
   methods: {
-    ...mapActions('corpora', ['editCorpus']),
-    renameCorpus(corpus) {
-      this.editCorpus({ id: corpus.id, title: corpus.title });
+    ...mapActions('corpora', ['deleteCorpus']),
+    deleteItem() {
+      this.deleteCorpus({ id: this.corpus.id });
       this.$emit('close');
     },
   },

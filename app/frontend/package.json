@@ -8,6 +8,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --no-clean",
+    "stage": "vue-cli-service build --no-clean --mode development",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

@@ -4,15 +4,29 @@
       Add new corpus
     </v-card-title>
     <v-container>
-      <v-text-field label="Title" placeholder="Enter corpus title"
-        v-model="corpusTitle" outlined clearable hide-details>
-      </v-text-field>
+      <v-text-field
+        v-model="corpusTitle"
+        clearable
+        hide-details
+        label="Title"
+        outlined
+        placeholder="Enter corpus title"
+      />
     <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn color="red darken-1" text oultined @click="toggle">
+      <v-spacer />
+      <v-btn
+        color="red darken-1"
+        oultined
+        text
+        @click="$emit('close')"
+      >
         Cancel
       </v-btn>
-      <v-btn color="green darken-1" text @click="addCorpus(corpusTitle)">
+      <v-btn
+        color="green darken-1"
+        text
+        @click="addCorpus(corpusTitle)"
+      >
         Add
       </v-btn>
       </v-card-actions>
@@ -24,9 +38,6 @@
 import { mapActions } from 'vuex';
 
 export default {
-  props: {
-    toggle: Function,
-  },
   data() {
     return {
       corpusTitle: '',
@@ -37,7 +48,7 @@ export default {
     addCorpus(title) {
       this.postCorpus(title);
       this.corpusTitle = '';
-      this.toggle();
+      this.$emit('close');
     },
   },
 };

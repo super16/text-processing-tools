@@ -18,6 +18,12 @@ class CorpusItem(CorpusBase):
     id: int = Field(description="Corpus Id")
 
     class Config:
+        schema_extra = {
+            "example": {
+                "title": "Brown Corpus",
+                "id": 1
+            }
+        }
         orm_mode = True
 
 

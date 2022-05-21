@@ -5,6 +5,7 @@ export default {
   state: () => ({
     corporaData: [],
     lastAddedCorpus: '',
+    lastDeletedCorpus: '',
   }),
   getters: {
     corporaCount(state) {
@@ -17,6 +18,9 @@ export default {
     },
     updateLastAddedCorpus(state, title) {
       state.lastAddedCorpus = title;
+    },
+    updateLastDeletedCorpus(state, title) {
+      state.lastDeletedCorpus = title;
     },
   },
   actions: {
@@ -72,5 +76,26 @@ export default {
         );
       });
     },
+    async deleteCorpus(context, { id }) {
+      return axios.delete(`corpora/${id}`, { id })
+        .then(
+          (response) => {
+            context.dispatch('loadCorpora');
+            context.commit('updateLastDeletedCorpus', response.data.title);
+            context.dispatch(
+              'alert/callAlert',
+              `Corpus ${context.state.lastDeletedCorpus} has been deleted`,
+              { root: true },
+            );
+          }
+        ).catch((error) => {
+          context.dispatch('loadCorpora');
+          context.dispatch(
+            'alert/callAlert',
+            error.response.data.error,
+            { root: true },
+          );
+        });
+    }
   },
 };

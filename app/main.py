@@ -56,7 +56,7 @@ async def startup_event():
     logger: Logger = getLogger("uvicorn.error")
 
     with Popen(
-        ["npm", "run", "--prefix", "app/frontend", "build"],
+        ["npm", "run", "--prefix", "app/frontend", "stage"],
         stdout=PIPE,
         universal_newlines=True,
     ) as proc:

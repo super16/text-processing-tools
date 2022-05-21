@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from exceptions import AlreadyExistsException, DoesNotExistException
-from crud import BaseCRUD
+from crud import BaseCRUDL
 from models import Corpus
-from schemas import Corpora, CorpusCreate, CorpusBase
+from schemas.corpora import Corpora, CorpusCreate, CorpusBase, CorpusItem
 
 
 router = APIRouter(prefix="/corpora", tags=["corpora"])
@@ -22,10 +22,15 @@ def get_db(request: Request):
     description="List of all corpora",
     response_model=Corpora,
     summary="All corpora",
+    responses={
+        200: {
+            "description": "List of all corpora"
+        },
+    },
 )
 async def all_corpora(db: Session = Depends(get_db)):
-    corpora_crud = BaseCRUD(db, Corpus)
-    return {"data": corpora_crud.read_items()}
+    corpora_crudl: BaseCRUDL = BaseCRUDL(db, Corpus)
+    return {"data": corpora_crudl.read_items()}
 
 
 @router.post(
@@ -48,11 +53,11 @@ async def all_corpora(db: Session = Depends(get_db)):
     summary="Add corpus",
 )
 async def add_corpus(corpus: CorpusCreate, db: Session = Depends(get_db)):
-    corpora_crud = BaseCRUD(db, Corpus)
-    new_corpus = corpora_crud.read_item_by_attr('title', corpus.title)
+    corpora_crudl: BaseCRUDL = BaseCRUDL(db, Corpus)
+    new_corpus = corpora_crudl.read_item_by_attr('title', corpus.title)
     if new_corpus:
         raise AlreadyExistsException(title=corpus.title)
-    return corpora_crud.create_item(corpus)
+    return corpora_crudl.create_item(corpus)
 
 
 @router.put(
@@ -87,20 +92,20 @@ async def edit_corpus(
     corpus: CorpusBase,
     db: Session = Depends(get_db)
 ):
-    corpora_crud: BaseCRUD = BaseCRUD(db, Corpus)
-    get_corpus = corpora_crud.read_item_by_attr('id', corpus_id)
+    corpora_crudl: BaseCRUDL = BaseCRUDL(db, Corpus)
+    get_corpus = corpora_crudl.read_item_by_attr('id', corpus_id)
 
     # Check if it's the same corpus
-    same_corpus = corpora_crud.get_item_by_id_and_title(
+    same_corpus = corpora_crudl.get_item_by_id_and_title(
         corpus_id, corpus.title
     )
     if same_corpus:
-        return corpora_crud.update_item_by_attr(
+        return corpora_crudl.update_item_by_attr(
             same_corpus, 'title', corpus.title
         )
 
     # Check if corpus with this title exists
-    corpus_title_exists = corpora_crud.read_item_by_attr(
+    corpus_title_exists = corpora_crudl.read_item_by_attr(
         'title', corpus.title
     )
     if corpus_title_exists:
@@ -109,6 +114,38 @@ async def edit_corpus(
     # Check for non-existent id
     if not get_corpus:
         raise DoesNotExistException(id=corpus_id)
-    return corpora_crud.update_item_by_attr(
-            get_corpus, 'title', corpus.title
-        )
+    return corpora_crudl.update_item_by_attr(
+        get_corpus, 'title', corpus.title
+    )
+
+
+@router.delete(
+    "/{corpus_id}",
+    description="Delete corpus",
+    response_model=CorpusItem,
+    responses={
+        200: {
+            "description": "Corpus has been deleted"
+        },
+        404: {
+            "description": "Requested corpus does not exist",
+            "content": {
+                "application/json": {
+                    "example": {"error": "Requested object does not exist"}
+                }
+            },
+        },
+    },
+    summary="Delete corpus",
+)
+async def delete_corpus(
+    corpus_id: int,
+    db: Session = Depends(get_db)
+):
+    corpora_crudl: BaseCRUDL = BaseCRUDL(db, Corpus)
+    delete_corpus = corpora_crudl.delete_item(corpus_id)
+
+    # Check for non-existent id
+    if not delete_corpus:
+        raise DoesNotExistException(id=corpus_id)
+    return delete_corpus

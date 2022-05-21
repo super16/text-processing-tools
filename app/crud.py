@@ -4,9 +4,9 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 from typing import Any
 
 
-class BaseCRUD:
+class BaseCRUDL:
     """
-    Basic CRUD class to operate with models.
+    Basic CRUDL class to operate with models.
     """
 
     def __init__(
@@ -14,7 +14,7 @@ class BaseCRUD:
         model: DeclarativeMeta
     ) -> None:
         """
-        BaseCRUD class constructor.
+        BaseCRUDL class constructor.
 
         Args:
           db (Session): SQLAlchemy Session class
@@ -40,6 +40,23 @@ class BaseCRUD:
         self.db.refresh(db_item)
         return db_item
 
+    def delete_item(self, id: int):
+        """
+        Delete model item.
+
+        Args:
+          id: Id value of object to delete.
+
+        Returns:
+          Deleted model item.
+        """
+        db_item = self.read_item_by_attr('id', id)
+        if db_item is None:
+            return None
+        self.db.delete(db_item)
+        self.db.commit()
+        return db_item
+
     def read_items(self):
         """
         Read all model items from DB.
@@ -47,7 +64,7 @@ class BaseCRUD:
         Returns:
           List of all model items.
         """
-        return self.db.query(self.model).all()
+        return self.db.query(self.model).order_by('id').all()
 
     def read_item_by_attr(self, attr: str, value: Any):
         """
