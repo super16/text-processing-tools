@@ -1,25 +1,26 @@
 # text-processing-tools
 
-## Development Mode
+Application with NLP tools in the web interface.
 
-### Prepare environment
+## Development
 
-```bash
-python3 -m venv env
-source env/bin/activate
-pip install -r requirements.txt
+Requires [poetry](https://python-poetry.org/).
+
+### Install dependencies
+
+```shell
+poetry install
 ```
 
-## Prepare frontend application
+## Lint
 
-```bash
-cd app/frontend
-npm install
-cd ../..
+```shell
+poetry run flake8
+poetry run mypy text_processing_tools/
 ```
 
 ### Run
 
-```bash
-python app/main.py
+```shell
+poetry run uvicorn text_processing_tools:app
 ```

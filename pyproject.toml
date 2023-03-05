@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "text-processing-tools"
+version = "0.1.0"
+description = "Application with NLP tools in web interface"
+authors = ["Mark <github.com/super16>"]
+readme = "README.md"
+packages = [{include = "text_processing_tools"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.92.0"
+uvicorn = "^0.20.0"
+
+
+[tool.poetry.group.development.dependencies]
+flake8 = "^6.0.0"
+mypy = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

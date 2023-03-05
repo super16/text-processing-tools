@@ -1,11 +1,3 @@
-# Assets
-app/static/*
-app/templates/*
-!app/templates/.gitkeep
-!app/templates/static
-app/templates/static/*
-!app/templates/static/.gitkeep
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -17,15 +9,6 @@ __pycache__/
 # Environment
 env/
 /.env
-
-# Frontend
-app/frontend/.DS_Store
-app/frontend/.vscode
-app/frontend/node_modules/
-app/frontend/dist/
-
-# Log files
-app/frontend/npm-debug.log*
 
 # MyPy
 .mypy_cache
