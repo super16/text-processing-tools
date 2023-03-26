@@ -6,6 +6,12 @@ Application with NLP tools in the web interface.
 
 Requires [poetry](https://python-poetry.org/).
 
+### Set Up Database
+
+```shell
+docker compose up -d
+```
+
 ### Install dependencies
 
 ```shell

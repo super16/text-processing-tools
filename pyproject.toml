@@ -10,6 +10,11 @@ packages = [{include = "text_processing_tools"}]
 python = "^3.11"
 fastapi = "^0.92.0"
 uvicorn = "^0.20.0"
+alembic = "^1.10.2"
+sqlalchemy = "^2.0.5.post1"
+asyncpg = "^0.27.0"
+pydantic = {extras = ["dotenv"], version = "^1.10.6"}
+orjson = "^3.8.8"
 
 
 [tool.poetry.group.development.dependencies]
