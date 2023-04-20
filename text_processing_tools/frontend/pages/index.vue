@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useHead } from '@vueuse/head';
-
 import NavigationDrawer from '../components/layout/NavigationDrawer.vue';
 
 useHead({ title: 'Text Processing Tools' });
